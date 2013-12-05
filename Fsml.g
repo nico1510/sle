@@ -4,23 +4,30 @@ options {
 	language=Python;
 }
 
+@header {
+    from collections import defaultdict
+}
+
 @init {
-   self.fsmObject = dict()
-   self.stateObject = dict()
-   self.transitions = dict()
-   self.currentState = ""
+    self.fsmObject = defaultdict(list)
+    self.stateObject = dict()
+    self.transitions = dict()
+    self.currentState = ""
 }
 
 @members {
+
     def addState(self, initialText, idText):
         self.stateObject = dict()
-        self.stateObject['transitions'] = dict()
+        self.stateObject['transitions'] = defaultdict(list)
         self.stateObject['initial'] = (initialText=='initial')
-        self.fsmObject[idText] = self.fsmObject.get(idText, []) + [self.stateObject]
+        self.fsmObject[idText] += [self.stateObject]
         self.currentState = idText
 
+
     def addTransition(self, inputText, outputText, targetStateText):
-        self.stateObject['transitions'][inputText] = self.stateObject['transitions'].get(inputText, []) + [("" if str(outputText) == "None" else outputText, self.currentState if str(targetStateText) == "None" else targetStateText)]
+        self.stateObject['transitions'][inputText] += [("" if str(outputText) == "None" else outputText, self.currentState if str(targetStateText) == "None" else targetStateText)]
+
 }
 
 fsm 	    : ( state )* ;
