@@ -1,6 +1,9 @@
-run:
+build:
 	make clean
 	java -cp .:antlr-3.1.jar org.antlr.Tool Fsml.g
+
+
+run:
 	python FsmlModule.py < sample.fsml
 
 

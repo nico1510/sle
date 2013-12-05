@@ -39,12 +39,9 @@ def fsmDeterministic(fsm):
 
 
 def fsmResolvable(fsm):
-    declaredStates = []
-    for state in fsm:
-        declaredStates += [state]
     for _, [stateDeclaration] in fsm.iteritems():
         for _, [(_, targetState)] in stateDeclaration["transitions"].iteritems():
-            if not targetState in declaredStates:
+            if not targetState in fsm:
                 return False
     else:
         return True
