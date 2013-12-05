@@ -1,1 +1,72 @@
-{"exception": [{"initial": false, "transitions": {"release": [["", "locked"]], "ticket": [["eject", "exception"]], "mute": [["", "exception"]], "pass": [["", "exception"]]}}], "locked": [{"initial": true, "transitions": {"ticket": [["collect", "unlocked"]], "pass": [["alarm", "exception"]]}}], "unlocked": [{"initial": false, "transitions": {"ticket": [["eject", "unlocked"]], "pass": [["", "locked"]]}}]}
+{
+  "exception": [
+    {
+      "initial": false, 
+      "transitions": {
+        "mute": [
+          [
+            "", 
+            "exception"
+          ]
+        ], 
+        "pass": [
+          [
+            "", 
+            "exception"
+          ]
+        ], 
+        "release": [
+          [
+            "", 
+            "locked"
+          ]
+        ], 
+        "ticket": [
+          [
+            "eject", 
+            "exception"
+          ]
+        ]
+      }
+    }
+  ], 
+  "locked": [
+    {
+      "initial": true, 
+      "transitions": {
+        "pass": [
+          [
+            "alarm", 
+            "exception"
+          ]
+        ], 
+        "ticket": [
+          [
+            "collect", 
+            "unlocked"
+          ]
+        ]
+      }
+    }
+  ], 
+  "unlocked": [
+    {
+      "initial": false, 
+      "transitions": {
+        "pass": [
+          [
+            "", 
+            "locked"
+          ]
+        ], 
+        "ticket": [
+          [
+            "eject", 
+            "unlocked"
+          ]
+        ]
+      }
+    }
+  ]
+}
+
