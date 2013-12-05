@@ -101,7 +101,7 @@ sampleInput = json.load(open("./sample_input.json", "r"))
 fsm = parseFSM()
 
 # just for visualization of the fsm dict
-jsonFile = open("./sample_fsml.json", 'w')
+jsonFile = open("./sample.json", 'w')
 jsonFile.write(json.dumps(fsm))
 
 if ok(fsm):

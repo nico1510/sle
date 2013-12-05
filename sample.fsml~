@@ -12,4 +12,10 @@ state exception {
   mute;
   release -> locked;
 }
+state exceptiontwo {
+  ticket/eject;
+  pass;
+  mute;
+  release -> locked;
+}
 

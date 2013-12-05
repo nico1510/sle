@@ -13,5 +13,5 @@ clean:
 	@rm -rf FsmlLexer.pyc
 	@rm -rf FsmlParser.py
 	@rm -rf FsmlParser.pyc
-	@rm -rf sample_fsml.json
+	@rm -rf sample.json
 	@rm -rf sample_output.json
