@@ -25,8 +25,8 @@ options {
         self.currentState = idText
 
 
-    def addTransition(self, inputText, outputText, targetStateText):
-        self.stateObject['transitions'][inputText] += [("" if str(outputText) == "None" else outputText, self.currentState if str(targetStateText) == "None" else targetStateText)]
+    def addTransition(self, inputText, actionText, targetStateText):
+        self.stateObject['transitions'][inputText] += [("" if str(actionText) == "None" else actionText, self.currentState if str(targetStateText) == "None" else targetStateText)]
 
 }
 
