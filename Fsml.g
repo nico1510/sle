@@ -11,7 +11,6 @@ options {
 @init {
     self.fsmObject = defaultdict(list)
     self.stateObject = dict()
-    self.transitions = dict()
     self.currentState = ""
 }
 
