@@ -30,14 +30,14 @@ options {
 
 }
 
-fsm 	    : ( state )* ;
-state	    : initial 'state' id {self.addState($initial.text,$id.text)} '{' ( transition )* '}' ;
-initial     : 'initial'
-	        |
-	        ;
-transition  : input_ ('/' action )? ( '->' id )? ';' {self.addTransition($input_.text, $action.text, $id.text)} ;
-id	        : NAME ;
-input_	    : NAME ;
-action	    : NAME ;
-NAME	    : ('a'..'z'|'A'..'Z')+ ;
-WS          : ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+    { $channel = HIDDEN; } ;
+fsm		: ( state )* ;
+state		: initial 'state' id {self.addState($initial.text,$id.text)} '{' ( transition )* '}' ;
+initial		: 'initial'
+		|
+		;
+transition	: input_ ('/' action )? ( '->' id )? ';' {self.addTransition($input_.text, $action.text, $id.text)} ;
+id		: NAME ;
+input_		: NAME ;
+action		: NAME ;
+NAME		: ('a'..'z'|'A'..'Z')+ ;
+WS		: ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+    { $channel = HIDDEN; } ;
