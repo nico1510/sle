@@ -1,0 +1,14 @@
+class Stepper():
+
+    def __init__(self):
+        self.currentState = "locked"
+        self.fsm = dict()
+
+    def add(self, fromState, input, action, toState):
+        self.fsm[fromState]["transitions"][input] = (action, toState)
+
+    def step(self, input):
+        (action, targetState) = self.currentState["transitions"][input]
+        print "from: "+self.currentState+", input: "+input+" to: "+targetState
+        self.currentState = targetState
+

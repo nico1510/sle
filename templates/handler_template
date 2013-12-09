@@ -1,4 +1,4 @@
-class TurnstileHandler():
+class DefaultTurnstileHandler():
 
     def __init__(self):
         self.actions = dict()
@@ -7,6 +7,9 @@ class TurnstileHandler():
 
     def handle(self, Action):
         self.actions[Action]()
+
+    def addHandlerFunction(self, action, function):
+        self.actions[action] = function
 
     {% for action in actions %}
     def handle{{ action|default('Empty', true)|capitalize() }}(self):
