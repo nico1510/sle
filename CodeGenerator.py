@@ -7,14 +7,12 @@ with open("./TurnstileHandler_generated.py","w") as handlerFile, open("./Turnsti
     transitions = []
 
     fsm = parseFSM()
-    for _, [stateDeclaration] in fsm.iteritems():
-        for _, [(action, _)] in stateDeclaration["transitions"].iteritems():
-            actions.add(action)
 
     for fromState, [stateDeclaration] in fsm.iteritems():
         if stateDeclaration["initial"]:
             initialState = fromState
         for input, [(action, toState)] in stateDeclaration["transitions"].iteritems():
+            actions.add(action)
             transitions.insert(0,(fromState, input, action, toState))
 
     env = Environment(loader=FileSystemLoader('./templates'))
