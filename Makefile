@@ -5,8 +5,6 @@ build:
 
 run:
 	python -B FsmlModule.py
-	python -B CodeGenerator.py
-	python -B Drawer.py
 	dot -Tpdf sample_graph.dot -o sample_graph.pdf
 
 
@@ -17,6 +15,9 @@ clean:
 	@rm -rf FsmlParser.py
 	@rm -rf FsmlParser.pyc
 	@rm -rf CodeGenerator.pyc
+	@rm -rf Drawer.pyc
+	@rm -rf OkFSM.pyc
+	@rm -rf SimulateFSM.pyc
 	@rm -rf TurnstileHandler_generated.py
 	@rm -rf TurnstileHandler_generated.pyc
 	@rm -rf TurnstileStepper_generated.pyc

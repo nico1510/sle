@@ -1,28 +1,28 @@
-from jinja2 import Template, Environment, PackageLoader, FileSystemLoader
-from FsmlModule import parseFSM
+from jinja2 import Environment, FileSystemLoader
 
-with open("./TurnstileHandler_generated.py","w") as handlerFile, open("./TurnstileStepper_generated.py","w") as stepperFile:
 
-    actions = set()
-    transitions = []
+def generateCode(fsm):
 
-    fsm = parseFSM()
+    with open("./TurnstileHandler_generated.py","w") as handlerFile, open("./TurnstileStepper_generated.py","w") as stepperFile:
 
-    for fromState, [stateDeclaration] in fsm.iteritems():
-        if stateDeclaration["initial"]:
-            initialState = fromState
-        for input, [(action, toState)] in stateDeclaration["transitions"].iteritems():
-            actions.add(action)
-            transitions.insert(0,(fromState, input, action, toState))
+        actions = set()
+        transitions = []
 
-    env = Environment(loader=FileSystemLoader('./templates'))
-    handlerTemplate = env.get_template('handler_template')
-    stepperTemplate = env.get_template('stepper_template')
+        for fromState, [stateDeclaration] in fsm.iteritems():
+            if stateDeclaration["initial"]:
+                initialState = fromState
+            for input, [(action, toState)] in stateDeclaration["transitions"].iteritems():
+                actions.add(action)
+                transitions.insert(0,(fromState, input, action, toState))
 
-    handlerClass = handlerTemplate.render(actions=actions)
-    stepperClass = stepperTemplate.render(initialState=initialState, transitions=transitions)
+        env = Environment(loader=FileSystemLoader('./templates'))
+        handlerTemplate = env.get_template('handler_template')
+        stepperTemplate = env.get_template('stepper_template')
 
-    handlerFile.write(handlerClass)
-    stepperFile.write(stepperClass)
+        handlerClass = handlerTemplate.render(actions=actions)
+        stepperClass = stepperTemplate.render(initialState=initialState, transitions=transitions)
 
-    print "Handler & Stepper generated"
+        handlerFile.write(handlerClass)
+        stepperFile.write(stepperClass)
+
+        print "Handler & Stepper generated"
