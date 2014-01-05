@@ -1,8 +1,17 @@
-class FsmParseException(Exception):
-    # Base class for all OkFSM exceptions
+class FsmException(Exception):
+    # Base class for all FSM exceptions
     pass
 
-class OkFsmException(Exception):
+class FsmParseException(FsmException):
+    pass
+
+class IllegalSymbolException(FsmException):
+    pass
+
+class InfeasibleSymbolException(FsmException):
+    pass
+
+class OkFsmException(FsmException):
     # Base class for all OkFSM exceptions
     pass
 
