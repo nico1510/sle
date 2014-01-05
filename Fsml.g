@@ -29,8 +29,8 @@ options {
 
 }
 
-fsm          : ( state )* ;
-state        : initial 'state' id {self.addState($initial.text,$id.text)} '{' ( transition )* '}' ;
+fsm          : state* ;
+state        : initial 'state' id {self.addState($initial.text,$id.text)} '{' transition* '}' ;
 initial      : 'initial'
              |
              ;
