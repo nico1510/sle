@@ -5,7 +5,9 @@ options {
 }
 
 @header {
+    import antlr3
     from collections import defaultdict
+    from FsmExceptions import *
 }
 
 @init {
@@ -27,17 +29,19 @@ options {
     def addTransition(self, inputText, actionText, targetStateText):
         self.stateObject['transitions'][inputText] += [("" if str(actionText) == "None" else actionText, self.currentState if str(targetStateText) == "None" else targetStateText)]
 
+    def displayRecognitionError(self, tokenNames, e):
+        raise FsmParseException()
+
+    antlr3.BaseRecognizer.displayRecognitionError = displayRecognitionError
+
 }
 
-fsm          : state* ;
-state        : initial 'state' id {self.addState($initial.text,$id.text)} '{' transition* '}' ;
-initial      : 'initial'
-             |
-             ;
-             
+fsm          : state* EOF ;
+state        : initial? 'state' id {self.addState($initial.text,$id.text)} '{' transition* '}' ;
+initial      : 'initial' ;
 transition   : input_ ('/' action )? ( '->' id )? ';' {self.addTransition($input_.text, $action.text, $id.text)} ;
 id           : NAME ;
 input_       : NAME ;
 action       : NAME ;
 NAME         : ('a'..'z'|'A'..'Z')+ ;
-WS           : ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+    { $channel = HIDDEN; } ;
+WS           : ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+    { self.skip() } ;

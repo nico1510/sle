@@ -1,10 +1,13 @@
+class FsmParseException(Exception):
+    # Base class for all OkFSM exceptions
+    pass
+
 class OkFsmException(Exception):
     # Base class for all OkFSM exceptions
     pass
 
 class DistinctIdsException(OkFsmException):
     pass
-
 
 class SingleInitialException(OkFsmException):
     pass
