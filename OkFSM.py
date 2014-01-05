@@ -65,9 +65,9 @@ def findReachableStates(currentState, fsm, visitedStates):
 
 def ok(fsm):
     for fun in [fsmDistinctIds, fsmSingleInitial, fsmDeterministic, fsmResolvable, fsmReachable]:
-        if not fun(fsm):
-            print fun.__name__ + " failed"
-            return False
+        try:
+            fun(fsm)
+        except OkFsmException:
+            raise
     else:
         print "all constraints succeeded"
-        return True
