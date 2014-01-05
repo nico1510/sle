@@ -6,6 +6,7 @@ from OkFSM import ok
 from SimulateFSM import simulateFSM
 from CodeGenerator import generateCode
 from Drawer import drawFSM
+from FsmExceptions import OkFsmException
 
 def parseFSM():
     char_stream = antlr3.ANTLRInputStream(open("./sample.fsml", 'r'))
@@ -24,7 +25,8 @@ sampleInput = json.load(open("./sample_input.json", "r"))
 jsonFile = open("./sample_fsml.json", 'w')
 jsonFile.write(json.dumps(fsm))
 
-if ok(fsm):
+try:
+    ok(fsm)
     #simulate the fsm
     output = simulateFSM(fsm, sampleInput)
     # dump the simulation output to file
@@ -36,5 +38,9 @@ if ok(fsm):
 
     #draw fsm
     drawFSM(fsm)
+
+except OkFsmException:
+    raise
+
 
 

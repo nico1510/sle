@@ -1,7 +1,10 @@
+from FsmExceptions import *
+
+
 def fsmDistinctIds(fsm):
     for state, stateDeclarations in fsm.iteritems():
         if not len(stateDeclarations) == 1:
-            return False
+            raise DistinctIdsException()
     else:
         return True
 
@@ -11,14 +14,18 @@ def fsmSingleInitial(fsm):
     for _, [stateDeclaration] in fsm.iteritems():
         if stateDeclaration["initial"]:
             count += 1
-    return count == 1
+
+    if not count == 1:
+        raise SingleInitialException()
+    else:
+        return True
 
 
 def fsmDeterministic(fsm):
     for state, [stateDeclaration] in fsm.iteritems():
         for input, transitions in stateDeclaration["transitions"].iteritems():
             if not len(transitions) == 1:
-                return False
+                raise DeterministicException()
     else:
         return True
 
@@ -27,7 +34,7 @@ def fsmResolvable(fsm):
     for _, [stateDeclaration] in fsm.iteritems():
         for _, [(_, targetState)] in stateDeclaration["transitions"].iteritems():
             if not targetState in fsm:
-                return False
+                raise ResolvableException()
     else:
         return True
 
@@ -36,12 +43,17 @@ def fsmReachable(fsm):
     for initialState, [stateDeclaration] in fsm.iteritems():
         if stateDeclaration["initial"]:
             reachables = set()
+            reachables.add(initialState)
             findReachableStates(initialState, fsm, reachables)
 
     definedStates = set()
     for state in fsm:
         definedStates.add(state)
-    return reachables == definedStates
+
+    if reachables == definedStates:
+        return True
+    else:
+        raise ReachableException()
 
 def findReachableStates(currentState, fsm, visitedStates):
     for stateDeclaration in fsm[currentState]:
