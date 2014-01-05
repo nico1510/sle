@@ -27,4 +27,5 @@ clean:
 	@rm -rf sample_output.json
 	@rm -rf sample_graph.dot
 	@rm -rf sample_graph.pdf
+	@rm -rf FsmExceptions.pyc
 
