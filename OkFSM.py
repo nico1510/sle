@@ -71,3 +71,4 @@ def ok(fsm):
             raise
     else:
         print "all constraints succeeded"
+

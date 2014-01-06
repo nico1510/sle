@@ -7,6 +7,8 @@ run:
 	python -B FsmlModule.py
 	dot -Tpdf sample_graph.dot -o sample_graph.pdf
 
+test:
+	cd tests; python -B FsmTest.py; cd ..
 
 clean:
 	@rm -rf Fsml.tokens
@@ -28,4 +30,5 @@ clean:
 	@rm -rf sample_graph.dot
 	@rm -rf sample_graph.pdf
 	@rm -rf FsmExceptions.pyc
+	@rm -rf ./tests/FsmTest.pyc
 
