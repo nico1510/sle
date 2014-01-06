@@ -10,6 +10,9 @@ run:
 test:
 	cd tests; python -B FsmTest.py; cd ..
 
+use:
+	python -B User.py
+
 clean:
 	@rm -rf Fsml.tokens
 	@rm -rf FsmlLexer.py

@@ -9,5 +9,13 @@ pygraphviz package (https://pypi.python.org/pypi/pygraphviz) & an installation o
 
 
 run "make build" to build the project and "make run" to run it
+
+"make run" does the following : 
+1) Parsing the sample.fsml and dumping it to "sample_fsml.json" for better visualization
+2) Checking the Ok constraints
+3) Simulating the FSM with the "sample_input.json" and dumping the output to "sample_output.json"
+4) Generating Python Code which can then be run with the command : "make use"
+5) Drawing the FSM in "sample_graph.pdf"
+
 "make clean" deletes all generated Files and "make test" is running the test cases
 
