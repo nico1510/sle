@@ -3,10 +3,10 @@ import sys
 import unittest
 
 sys.path.append('..')
-from OkFSM import ok
-from FsmlModule import parseFSM
+from ConstraintChecker import ok
+from MainFSM import parseFSM
 from FsmExceptions import *
-from SimulateFSM import simulateFSM
+from Simulator import simulateFSM
 
 # test cases for the OK constraints
 
