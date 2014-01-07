@@ -8,7 +8,7 @@ from FsmlModule import parseFSM
 from FsmExceptions import *
 from SimulateFSM import simulateFSM
 
-# test cases for the OK Constraints
+# test cases for the OK constraints
 
 class TestOkConstraints(unittest.TestCase):
 
@@ -30,8 +30,9 @@ class TestOkConstraints(unittest.TestCase):
     def testResolution(self):
         self.assertRaises(ResolvableException, ok, self.resolutionNotOkFsm)
 
+# test cases for the other constraints
 
-class OtherConstraints(unittest.TestCase):
+class TestOtherConstraints(unittest.TestCase):
 
     def setUp(self):
         self.parserErrorFsm = "./parserError.fsml"

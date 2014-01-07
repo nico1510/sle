@@ -26,10 +26,6 @@ def main():
         jsonFile = open("./sample_fsml.json", 'w')
         jsonFile.write(json.dumps(fsm))
 
-    except FsmParseException:
-        raise
-
-    try:
         ok(fsm)
         #simulate the fsm
         output = simulateFSM(fsm, sampleInput)
