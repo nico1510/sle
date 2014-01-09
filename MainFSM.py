@@ -22,10 +22,11 @@ def main():
         fsm = parseFSM("./sample.fsml")
         sampleInput = json.load(open("./sample_input.json", "r"))
 
-        # just for visualization of the fsm dict
+        # just for visualization of the fsm dict (not needed anywhere in the code)
         jsonFile = open("./sample_fsml.json", 'w')
         jsonFile.write(json.dumps(fsm))
 
+        # check the ok constraints
         ok(fsm)
         #simulate the fsm
         output = simulateFSM(fsm, sampleInput)
