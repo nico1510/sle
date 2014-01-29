@@ -21,6 +21,39 @@ def randomEdgeName(node, g, edgeNames):
         return list(remainingEdgeNames)[randint(0,len(remainingEdgeNames)-1)]
 
 
+def nodeToDict(g, nodeName):
+    nodeDict = dict()
+    nodeDict["name"] = nodeName
+    nodeDict["transitions"] = []
+    for startState, newState, input in g.edges(nbunch=[nodeName], keys=True):
+        transDict = dict()
+        transDict["input"] = input
+        transDict["newstate"] = newState
+        transDict["action"] = "action"
+        nodeDict["transitions"].append(transDict)
+    return nodeDict
+
+
+def graphAsList(g, edgeList):
+
+    nodes = g.nodes()
+
+    # turn initial state into dict
+    nodes.remove("initial")
+    initialStateDict = nodeToDict(g, "initial")
+    # put initial state at head of the list
+    graphList = [initialStateDict]
+
+    # append dicts of all other states to list
+    for edgeCount in edgeList[1:]:
+        nodeWithCorrectEdges = [node for node in nodes if len(g.edges(nbunch=[node]))==edgeCount].pop()
+        nodes.remove(nodeWithCorrectEdges)
+        nodeDict = nodeToDict(g, nodeWithCorrectEdges)
+        graphList.append(nodeDict)
+
+    return graphList
+
+
 def createRandomGraph(noNodes, noEdges):
 
     if noEdges < noNodes-1:
@@ -81,7 +114,6 @@ def createSpecificRandomGraph(edgeNumberList):
 
     stillNeedEdges = [node for node in g.nodes() if currentEdgeCountMap[node]<requiredEdgeCountMap[node]]
 
-
     for i in range(noNodes):
         newNode = nodeNames.pop(0)
         randomNode = stillNeedEdges[randint(0, len(stillNeedEdges)-1)]
@@ -107,7 +139,9 @@ def createSpecificRandomGraph(edgeNumberList):
 
 #g = createRandomGraph(10, 10)
 
-g = createSpecificRandomGraph([1,2,2,0,0])
+g = createSpecificRandomGraph([4,2,0,1,0])
+
+print graphAsList(g, [4,2,0,1,0])
 
 g.layout(prog='dot')
 g.draw('random.png')
