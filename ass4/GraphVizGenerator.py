@@ -4,7 +4,7 @@ import pygraphviz as pgv
 
 
 def randomWord():
-    wordlength = randint(1,10)
+    wordlength = randint(2,10)
     word = ""
     for i in range(wordlength):
         word += string.ascii_lowercase[randint(0,25)]
@@ -23,12 +23,19 @@ def randomEdgeName(node, g, edgeNames):
 
 def createRandomGraph(noNodes, noEdges):
 
-    nodeNames = [randomWord() for i in range(noNodes-1)]
+    if noEdges < noNodes-1:
+        raise ValueError("Can not construct a valid graph with given input")
+
+    nodeNames = ["initial"]+[randomWord() for i in range(noNodes-1)]
+    # this while loop is only run if the random word generator accidently generates duplicate words
+    while len(set(nodeNames)) < len(nodeNames):
+        nodeNames = ["initial"]+[randomWord() for i in range(noNodes-1)]
+
     edgeNames = []
 
     g = pgv.AGraph(title="Random FSM", directed=True, strict=False, rankdir='LR', nodesep=.5)
 
-    g.add_node("initial", shape='ellipse', style='filled')
+    g.add_node(nodeNames.pop(0), shape='ellipse', style='filled')
     noNodes -= 1
 
     for i in range(noNodes):
@@ -63,7 +70,7 @@ def createSpecificRandomGraph(edgeNumberList):
     currentEdgeCountMap = dict()
     requiredEdgeCountMap = dict()
 
-    for requiredEdges, node in zip(edgeNumberList, nodeNames):
+    for requiredEdges, node in zip([edgeNumberList[0]]+sorted(edgeNumberList[1:], reverse=True), nodeNames):
         currentEdgeCountMap[node] = 0
         requiredEdgeCountMap[node] = requiredEdges
 
@@ -76,7 +83,7 @@ def createSpecificRandomGraph(edgeNumberList):
 
 
     for i in range(noNodes):
-        newNode = nodeNames.pop()
+        newNode = nodeNames.pop(0)
         randomNode = stillNeedEdges[randint(0, len(stillNeedEdges)-1)]
         g.add_node(newNode, shape='ellipse')
         edgename = randomEdgeName(randomNode, g, edgeNames)
@@ -100,7 +107,7 @@ def createSpecificRandomGraph(edgeNumberList):
 
 #g = createRandomGraph(10, 10)
 
-g = createSpecificRandomGraph([4, 4, 0, 0, 0])
+g = createSpecificRandomGraph([1,2,2,0,0])
 
 g.layout(prog='dot')
 g.draw('random.png')
