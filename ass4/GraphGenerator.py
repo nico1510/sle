@@ -15,6 +15,9 @@ def randomEdgeName(node, g, edgeNames):
     remainingEdgeNames = set(edgeNames).difference(nodeEdges)
     if not remainingEdgeNames:
         newlabel = randomWord()
+        # this while loop just makes sure that no random duplicates are created by accident
+        while newlabel in edgeNames:
+            newlabel = randomWord()
         edgeNames.append(newlabel)
         return newlabel
     else:
@@ -140,6 +143,6 @@ def createSpecificRandomGraph(edgeNumberList):
 
     return g
 
-
+#g = createSpecificRandomGraph([2, 2, 0])
 #g.layout(prog='dot')
 #g.draw('random.png')
