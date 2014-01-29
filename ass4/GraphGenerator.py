@@ -39,8 +39,7 @@ def graphAsList(g, edgeList):
     nodes = g.nodes()
 
     # turn initial state into dict
-    nodes.remove("initial")
-    initialStateDict = nodeToDict(g, "initial")
+    initialStateDict = nodeToDict(g, nodes.pop(0))
     # put initial state at head of the list
     graphList = [initialStateDict]
 
@@ -59,10 +58,10 @@ def createRandomGraph(noNodes, noEdges):
     if noEdges < noNodes-1:
         raise ValueError("Can not construct a valid graph with given input")
 
-    nodeNames = ["initial"]+[randomWord() for i in range(noNodes-1)]
+    nodeNames = [randomWord() for i in range(noNodes)]
     # this while loop is only run if the random word generator accidently generates duplicate words
     while len(set(nodeNames)) < len(nodeNames):
-        nodeNames = ["initial"]+[randomWord() for i in range(noNodes-1)]
+        nodeNames = [randomWord() for i in range(noNodes)]
 
     edgeNames = []
 
@@ -98,7 +97,11 @@ def createSpecificRandomGraph(edgeNumberList):
         raise ValueError("Can not construct a valid graph with given input")
 
 
-    nodeNames = ["initial"]+[randomWord() for i in range(noNodes-1)]
+    nodeNames = [randomWord() for i in range(noNodes)]
+    # this while loop is only run if the random word generator accidently generates duplicate words
+    while len(set(nodeNames)) < len(nodeNames):
+        nodeNames = [randomWord() for i in range(noNodes)]
+
     edgeNames = []
     currentEdgeCountMap = dict()
     requiredEdgeCountMap = dict()
@@ -137,11 +140,6 @@ def createSpecificRandomGraph(edgeNumberList):
 
     return g
 
-#g = createRandomGraph(10, 10)
 
-g = createSpecificRandomGraph([4,2,0,1,0])
-
-print graphAsList(g, [4,2,0,1,0])
-
-g.layout(prog='dot')
-g.draw('random.png')
+#g.layout(prog='dot')
+#g.draw('random.png')

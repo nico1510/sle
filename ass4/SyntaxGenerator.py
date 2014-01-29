@@ -11,14 +11,14 @@ TRANS -> TRANSITION TRANS |
 TRANSITION -> '#input#' '/' '#action#' '->' '#newState#' ';'
 """
 
-def generateRawTemplates():
+def generateRawTemplates(depth):
     gram = parse_cfg(grammarstring)
-    rawTemplates = generate(gram, depth=7)
+    rawTemplates = generate(gram, depth=depth)
     i = 0
     templatefiles = []
 
     for state in rawTemplates:
-        filename = os.path.join("./rawTemplates","template"+str(i))
+        filename = os.path.join("./templates","template"+str(i))
         with open(filename, 'w') as templatefile:
             templatefile.write(' '.join(state))
             i+=1
