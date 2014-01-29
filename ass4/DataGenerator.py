@@ -43,29 +43,29 @@ def generateTemplate(filename):
 
     return edgeList
 
+def generateTestFiles(depth):
+    oldFiles = glob.glob('./templates/template*')+glob.glob('./testdata/*.fsml')
+    for f in oldFiles:
+        os.remove(f)
 
-oldFiles = glob.glob('./templates/template*')+glob.glob('./testdata/*.fsml')
-for f in oldFiles:
-    os.remove(f)
+    templatefiles = generateRawTemplates(depth)
+    env = Environment(loader=FileSystemLoader('.'))
+    count = 0
 
-templatefiles = generateRawTemplates(7)
-env = Environment(loader=FileSystemLoader('.'))
-count = 0
+    for file in templatefiles:
+        # after this command, the placeholders of the file are replaced with jinja placeholders
+        edgeList = generateTemplate(file)
 
-for file in templatefiles:
-    # after this command, the placeholders of the file are replaced with jinja placeholders
-    edgeList = generateTemplate(file)
+        try:
+            g = createSpecificRandomGraph(edgeList)
+            states = graphAsList(g, edgeList)
+            template = env.get_template(file)
+            testdata = template.render(states=states)
+            testdataFile = open(os.path.join("./testdata", "sample"+file.split("template")[2]+".fsml"), 'w')
+            testdataFile.write(testdata)
+            count += 1
 
-    try:
-        g = createSpecificRandomGraph(edgeList)
-        states = graphAsList(g, edgeList)
-        template = env.get_template(file)
-        testdata = template.render(states=states)
-        testdataFile = open(os.path.join("./testdata", "sample"+file.split("template")[2]+".fsml"), 'w')
-        testdataFile.write(testdata)
-        count += 1
+        except ValueError:
+            os.remove(file)
 
-    except ValueError:
-        os.remove(file)
-
-print str(count)+" test-data files generated"
+    print str(count)+" test-data files generated"
