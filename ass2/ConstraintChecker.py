@@ -70,5 +70,5 @@ def ok(fsm):
         except OkFsmException:
             raise
     else:
-        print "all constraints succeeded"
+        return True
 
