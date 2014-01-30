@@ -67,25 +67,16 @@ def createSpecificFSM(transitionList):
 
     stillNeedTrans = [state for state in fsm if state["requiredTransitions"]>0]
 
-    for i in range(noOfStates):
-        newState = stateDicts.pop(0)
-        randomState = stillNeedTrans[randint(0, len(stillNeedTrans)-1)]
-        fsm.append(newState)
-        inputName = randomInputName(randomState, transNames)
-        randomState["transitions"].append({'input': inputName, 'action': 'action', 'newstate': newState['name']})
-        randomState["requiredTransitions"] -= 1
-        stillNeedTrans = [state for state in fsm if state["requiredTransitions"]>0]
-
-
-    remainingTrans = noOfTrans - noOfStates
-
-    for i in range(remainingTrans):
+    for i in range(noOfTrans):
         randomStartState = stillNeedTrans[randint(0, len(stillNeedTrans)-1)]
-        randomTargetState = fsm[randint(0, len(fsm)-1)]
+        if i < noOfStates:
+            randomTargetState = stateDicts.pop(0)
+            fsm.append(randomTargetState)
+        else:
+            randomTargetState = fsm[randint(0, len(fsm)-1)]
         inputName = randomInputName(randomStartState, transNames)
         randomStartState["transitions"].append({'input': inputName, 'action': 'action', 'newstate': randomTargetState['name']})
         randomStartState["requiredTransitions"] -= 1
         stillNeedTrans = [state for state in fsm if state["requiredTransitions"]>0]
-
 
     return sortFSM(fsm, transitionList)
