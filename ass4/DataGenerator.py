@@ -1,7 +1,7 @@
 import glob
 import os
 from jinja2 import FileSystemLoader, Environment
-from GraphGenerator import createSpecificRandomGraph, graphAsList
+from FSMGenerator import createSpecificFSM
 from SyntaxGenerator import generateRawTemplates
 
 
@@ -57,10 +57,9 @@ def generateTestFiles(depth):
         edgeList = generateTemplate(file)
 
         try:
-            g = createSpecificRandomGraph(edgeList)
-            states = graphAsList(g, edgeList)
+            fsm = createSpecificFSM(edgeList)
             template = env.get_template(file)
-            testdata = template.render(states=states)
+            testdata = template.render(states=fsm)
             testdataFile = open(os.path.join("./testdata", "sample"+file.split("template")[2]+".fsml"), 'w')
             testdataFile.write(testdata)
             count += 1

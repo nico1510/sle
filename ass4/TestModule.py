@@ -8,7 +8,7 @@ from ConstraintChecker import ok
 from FsmExceptions import *
 from DataGenerator import generateTestFiles
 
-generateTestFiles(6)
+generateTestFiles(7)
 testFiles = glob.glob('./testdata/*.fsml')
 
 for f in testFiles:
@@ -16,4 +16,4 @@ for f in testFiles:
         fsm = parseFSM(f)
         ok(fsm)
     except FsmException:
-        print f+" failed"
+        raise
