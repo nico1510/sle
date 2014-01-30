@@ -42,7 +42,7 @@ def createSpecificFSM(transitionList):
     noOfStates = len(transitionList)
     noOfTrans = sum(transitionList)
 
-    if noOfTrans < noOfStates-1 or transitionList[0]==0:
+    if (noOfTrans < noOfStates-1) or (transitionList[0]==0 and len(transitionList)>1):
         raise ValueError("Can not construct a valid FSM with given input")
 
 
