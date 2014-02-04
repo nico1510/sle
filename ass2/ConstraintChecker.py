@@ -10,12 +10,8 @@ def fsmDistinctIds(fsm):
 
 
 def fsmSingleInitial(fsm):
-    count = 0
-    for _, [stateDeclaration] in fsm.iteritems():
-        if stateDeclaration["initial"]:
-            count += 1
-
-    if not count == 1:
+    initStates = [initialState for initialState, [stateDeclaration] in fsm.iteritems() if stateDeclaration["initial"]]
+    if not len(initStates) == 1:
         raise SingleInitialException()
     else:
         return True
@@ -42,13 +38,10 @@ def fsmResolvable(fsm):
 def fsmReachable(fsm):
     for initialState, [stateDeclaration] in fsm.iteritems():
         if stateDeclaration["initial"]:
-            reachables = set()
-            reachables.add(initialState)
+            reachables = set([initialState])
             findReachableStates(initialState, fsm, reachables)
 
-    definedStates = set()
-    for state in fsm:
-        definedStates.add(state)
+    definedStates = set(fsm.keys())
 
     if reachables == definedStates:
         return True
