@@ -1,11 +1,19 @@
 import glob
+import json
 import os
 from jinja2 import FileSystemLoader, Environment
 from FSMGenerator import createSpecificFSM
 from SyntaxGenerator import generateRawTemplates
+from InputGenerator import generateCorrectInput
 
 
-def generateTemplate(filename):
+def removeOldTestFiles():
+    for path, _, files in os.walk("./testdata"):
+        for testfile in files:
+            if not testfile == ".gitignore":
+                os.remove(os.path.join(path, testfile))
+
+def generateJinjaTemplateFile(filename):
     templatefile = open(filename, 'r')
     content = templatefile.read().split()
     noStates = 0
@@ -43,10 +51,9 @@ def generateTemplate(filename):
 
     return transList
 
-def generateTestFiles(depth):
-    oldFiles = glob.glob('./templates/template*')+glob.glob('./testdata/*.fsml')
-    for f in oldFiles:
-        os.remove(f)
+def generateCorrectTestData(depth):
+
+    removeOldTestFiles()
 
     templatefiles = generateRawTemplates(depth)
     env = Environment(loader=FileSystemLoader('.'))
@@ -54,14 +61,23 @@ def generateTestFiles(depth):
 
     for file in templatefiles:
         # after this command, the placeholders of the file are replaced with jinja placeholders
-        transList = generateTemplate(file)
+        transList = generateJinjaTemplateFile(file)
 
         try:
+            # generate correct .fsml File
             fsm = createSpecificFSM(transList)
             template = env.get_template(file)
-            testdata = template.render(states=fsm)
-            testdataFile = open(os.path.join("./testdata", "sample"+file.split("template")[2]+".fsml"), 'w')
-            testdataFile.write(testdata)
+            fsmlData = template.render(states=fsm)
+            fsmlFile = open(os.path.join("./testdata/positive/fsm", "sample"+file.split("template")[2]+".fsml"), 'w')
+            fsmlFile.write(fsmlData)
+
+            # generate correct input .json File
+            correctInput, correctOutput = generateCorrectInput(fsm)
+            inputFile = open("./testdata/positive/input/input"+file.split("template")[2]+".json", 'w')
+            inputFile.write(json.dumps(correctInput))
+            outputFile = open("./testdata/positive/output/output"+file.split("template")[2]+".json", 'w')
+            outputFile.write(json.dumps(correctOutput))
+
             count += 1
 
         except ValueError:

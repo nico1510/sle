@@ -1,4 +1,6 @@
 import glob
+import json
+import os
 import sys
 import unittest
 
@@ -7,27 +9,86 @@ sys.path.append("../ass2")
 from MainFSM import parseFSM
 from ConstraintChecker import ok
 from FsmExceptions import *
-from DataGenerator import generateTestFiles
+from DataGenerator import generateCorrectTestData
+from Simulator import simulateFSM
+from CodeGenerator import generateCode
 
+# Code for testing all valid fsml files
 
-class DataTestCase(unittest.TestCase):
-    def __init__(self, testdataFile):
+class positiveOkTestCase(unittest.TestCase):
+    def __init__(self, fsmlFile):
         unittest.TestCase.__init__(self, methodName='testOneFile')
-        self.testdataFile = testdataFile
+        self.fsmlFile = fsmlFile
 
     def testOneFile(self):
-        fsm = parseFSM(self.testdataFile)
+        fsm = parseFSM(self.fsmlFile)
         self.assertTrue(ok(fsm))
 
     def shortDescription(self):
-        return 'TestCase for file %s' % self.testdataFile
+        return 'TestCase for file %s' % self.fsmlFile
+
+def fsmlTestSuite():
+    fsmlFiles = glob.glob('./testdata/positive/fsm/*.fsml')
+    return unittest.TestSuite([positiveOkTestCase(fsmlFile) for fsmlFile in fsmlFiles])
+
+# Code for testing all valid input files and comparing them to the correct output files
+
+class positiveOutputTestCase(unittest.TestCase):
+    def __init__(self, fsmlFile, inputFile, correctOutputFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+        self.inputFile = inputFile
+        self.correctOutputFile = correctOutputFile
+
+    def testOneFile(self):
+        self.shortDescription()
+        fsm = parseFSM(self.fsmlFile)
+        with open(self.inputFile) as inputFile, open(self.correctOutputFile) as outFile:
+            correctInputJson = json.load(inputFile)
+
+            # (1) this is the correct output which is created together with the input
+            correctJsonOutput = json.load(outFile)
+
+            # (2) this is the output of the Simulator.py module of assignment 2
+            simulatedJsonOutput = simulateFSM(fsm, list(correctInputJson))
+
+             # (3) what follows is the output of the dynamically generated TurnstileStepper modules
+            generateCode(fsm)
+            import TurnstileStepper_generated
+            reload(TurnstileStepper_generated)
+            stepper = TurnstileStepper_generated.Stepper()
+            generatedJsonOutput = stepper.simulateFSM_generated(list(correctInputJson))
+            try:
+                os.remove('./TurnstileStepper_generated.pyc')
+            except OSError:
+                pass
+
+            # assert all 3 are equal
+            self.assertEqual(correctJsonOutput, simulatedJsonOutput)
+            self.assertEqual(correctJsonOutput, generatedJsonOutput)
+
+    def tearDown(self):
+        for file in ['./TurnstileStepper_generated.pyc', './TurnstileStepper_generated.py', './TurnstileHandler_generated.pyc', './TurnstileHandler_generated.py']:
+            if os.path.exists(file):
+                os.remove(file)
 
 
-def get_test_data_suite():
-    generateTestFiles(8)
-    testFiles = glob.glob('./testdata/*.fsml')
-    return unittest.TestSuite([DataTestCase(testFile) for testFile in testFiles])
+
+    def shortDescription(self):
+        return 'TestCase for fsml file : %s with input file : %s and output file : %s' % (self.fsmlFile, self.inputFile, self.correctOutputFile)
+
+
+def inputTestSuite():
+    fsmlFiles = sorted(glob.glob('./testdata/positive/fsm/*.fsml'))
+    inputFiles = sorted(glob.glob('./testdata/positive/input/*.json'))
+    correctOutputFiles = sorted(glob.glob('./testdata/positive/output/*.json'))
+
+    return unittest.TestSuite([positiveOutputTestCase(fsmlFile, inputFile, correctOutputFile) for fsmlFile, inputFile, correctOutputFile in zip(fsmlFiles, inputFiles, correctOutputFiles)])
+
+# main module Code for running all the tests
 
 if __name__ == '__main__':
+    generateCorrectTestData(7)
     testRunner = unittest.TextTestRunner()
-    testRunner.run(get_test_data_suite())
+    testRunner.run(fsmlTestSuite())
+    testRunner.run(inputTestSuite())
