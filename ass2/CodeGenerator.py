@@ -1,3 +1,4 @@
+import os
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -15,7 +16,7 @@ def generateCode(fsm):
                 actions.add(action)
                 transitions.insert(0,(fromState, input, action, toState))
 
-        env = Environment(loader=FileSystemLoader('./templates'))
+        env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__),"templates")))
         handlerTemplate = env.get_template('handler_template')
         stepperTemplate = env.get_template('stepper_template')
 
@@ -24,5 +25,3 @@ def generateCode(fsm):
 
         handlerFile.write(handlerClass)
         stepperFile.write(stepperClass)
-
-        print "Handler & Stepper generated"

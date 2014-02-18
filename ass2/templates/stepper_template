@@ -1,6 +1,5 @@
 from TurnstileHandler_generated import DefaultTurnstileHandler
 
-
 class Stepper():
 
     def __init__(self):
@@ -16,9 +15,20 @@ class Stepper():
             self.fsm[fromState]["transitions"] = dict()
         self.fsm[fromState]["transitions"][input] = (action, toState)
 
+    def simulateFSM_generated(self, inputList):
+        output = []
+        while inputList:
+            input = inputList.pop(0)
+            action, targetState = self.step(input)
+            item = dict()
+            item[targetState] = action
+            output.append(item)
+
+        return output
+
     def step(self, input):
         (action, targetState) = self.fsm[self.currentState]["transitions"][input]
-        print "from: "+self.currentState+", input: "+input+" to: "+targetState
         self.handler.handle(action)
         self.currentState = targetState
+        return action, targetState
 

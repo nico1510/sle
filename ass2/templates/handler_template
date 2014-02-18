@@ -13,5 +13,7 @@ class DefaultTurnstileHandler():
 
     {% for action in actions %}
     def handle{{ action|default('Empty', true)|capitalize() }}(self):
-        print "handling {{ action|default('Empty', true)|capitalize() }}"
+        # print "handling {{ action|default('Empty', true)|capitalize() }}"
+        pass
     {% endfor %}
+
