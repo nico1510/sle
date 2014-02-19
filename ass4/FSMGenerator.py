@@ -51,7 +51,7 @@ def createSpecificFSM(transitionList):
     while len(set(stateNames)) < len(stateNames):
         stateNames = [randomWord() for i in range(noOfStates)]
 
-    transNames = []
+    inputNames = []
     stateDicts = []
 
     for requiredTrans, stateName in zip([transitionList[0]]+sorted(transitionList[1:], reverse=True), stateNames):
@@ -73,8 +73,8 @@ def createSpecificFSM(transitionList):
             fsm.append(randomTargetState)
         else:
             randomTargetState = fsm[randint(0, len(fsm)-1)]
-        inputName = randomInputName(randomStartState, transNames)
-        randomStartState["transitions"].append({'input': inputName, 'action': 'action', 'newstate': randomTargetState['name']})
+        inputName = randomInputName(randomStartState, inputNames)
+        randomStartState["transitions"].append({'input': inputName, 'action': randomWord(), 'newstate': randomTargetState['name']})
         randomStartState["requiredTransitions"] -= 1
 
     return sortFSM(fsm, transitionList)

@@ -16,6 +16,7 @@ from CodeGenerator import generateCode
 # Code for testing all valid fsml files
 
 class positiveOkTestCase(unittest.TestCase):
+
     def __init__(self, fsmlFile):
         unittest.TestCase.__init__(self, methodName='testOneFile')
         self.fsmlFile = fsmlFile
@@ -28,6 +29,15 @@ class positiveOkTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def fsmlTestSuite():
+    # delete old test data
+    for path, _, files in os.walk("./testdata"):
+        for testfile in files:
+            if not testfile == ".gitignore":
+                os.remove(os.path.join(path, testfile))
+
+    # generate new test data
+    generateCorrectTestData(7)
+
     fsmlFiles = glob.glob('./testdata/positive/fsm/*.fsml')
     return unittest.TestSuite([positiveOkTestCase(fsmlFile) for fsmlFile in fsmlFiles])
 
@@ -53,13 +63,16 @@ class positiveOutputTestCase(unittest.TestCase):
             simulatedJsonOutput = simulateFSM(fsm, list(correctInputJson))
 
              # (3) what follows is the output of the dynamically generated TurnstileStepper modules
-            generateCode(fsm)
+            generateCode(fsm)  # generate Stepper and Handler
+            import TurnstileHandler_generated  # import the newly generated modules (& update the reference)
+            reload(TurnstileHandler_generated)
             import TurnstileStepper_generated
             reload(TurnstileStepper_generated)
             stepper = TurnstileStepper_generated.Stepper()
             generatedJsonOutput = stepper.simulateFSM_generated(list(correctInputJson))
             try:
                 os.remove('./TurnstileStepper_generated.pyc')
+                os.remove('./TurnstileHandler_generated.pyc')
             except OSError:
                 pass
 
@@ -88,7 +101,6 @@ def inputTestSuite():
 # main module Code for running all the tests
 
 if __name__ == '__main__':
-    generateCorrectTestData(7)
     testRunner = unittest.TextTestRunner()
     testRunner.run(fsmlTestSuite())
     testRunner.run(inputTestSuite())

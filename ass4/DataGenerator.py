@@ -7,12 +7,6 @@ from SyntaxGenerator import generateRawTemplates
 from InputGenerator import generateCorrectInput
 
 
-def removeOldTestFiles():
-    for path, _, files in os.walk("./testdata"):
-        for testfile in files:
-            if not testfile == ".gitignore":
-                os.remove(os.path.join(path, testfile))
-
 def generateJinjaTemplateFile(filename):
     templatefile = open(filename, 'r')
     content = templatefile.read().split()
@@ -52,8 +46,6 @@ def generateJinjaTemplateFile(filename):
     return transList
 
 def generateCorrectTestData(depth):
-
-    removeOldTestFiles()
 
     templatefiles = generateRawTemplates(depth)
     env = Environment(loader=FileSystemLoader('.'))
