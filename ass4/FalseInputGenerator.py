@@ -4,15 +4,15 @@ from CorrectFSMGenerator import randomWord
 
 def generateIllegalInput(fsm):
 
-    correctInput = generateCorrectInput(fsm)
-    errorPosition = randint(0,len(correctInput)-1)
+    correctInput, _ = generateCorrectInput(fsm)
+    errorPosition = randint(0, len(correctInput)-1)
 
-    feasibleInputs = set()
+    feasibleInputs = []
     for state in fsm:
-        feasibleInputs += set([transition['input'] for transition in state['transitions']])
+        feasibleInputs += [transition['input'] for transition in state['transitions']]
 
     wrongInput = randomWord()
-    while wrongInput not in feasibleInputs:
+    while wrongInput in feasibleInputs:
         wrongInput = randomWord()
 
     correctInput[errorPosition] = wrongInput

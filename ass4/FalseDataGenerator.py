@@ -1,9 +1,11 @@
+import json
 import os
 from random import randint
 from jinja2 import FileSystemLoader, Environment
 from FalseFSMGenerator import createWrongFSM
 from SyntaxGenerator import generateRawTemplates
 from FalseInputGenerator import generateInfeasibleInput, generateIllegalInput
+from CorrectFSMGenerator import createSpecificFSM
 
 
 def generateJinjaTemplateFile(filename, produceError):
@@ -60,7 +62,21 @@ def generateJinjaTemplateFile(filename, produceError):
 
     return transList
 
+
+def removeOldNegativeTestFiles(error):
+    if error=='infeasible' or error=='illegal':
+        subdir = 'input'
+    else:
+        subdir = 'fsm'
+    for path, _, files in os.walk(os.path.join("./testdata/negative/"), subdir, error):
+        for testfile in files:
+            if not testfile == ".gitignore":
+                os.remove(os.path.join(path, testfile))
+
+
 def generateNegativeTestData(depth, error):
+
+    removeOldNegativeTestFiles(error)  # remove old testfiles for given error
 
     templatefiles = generateRawTemplates(depth)
     env = Environment(loader=FileSystemLoader('.'))
@@ -69,19 +85,33 @@ def generateNegativeTestData(depth, error):
     for file in templatefiles:
         # after this command, the placeholders of the file are replaced with jinja placeholders
         transList = generateJinjaTemplateFile(file, error=='parsererror')
+        fsmlFilePath = os.path.join("./testdata/negative/fsm", error, "sample"+file.split("template")[2]+".fsml")
 
         try:
             # generate wrong .fsml File
-            fsm = createWrongFSM(transList, error)
+            if error=='reachability':
+                fsm = createWrongFSM(transList, error)
+
+            if error=='parsererror':
+                fsm = createSpecificFSM(transList)
+
+            if error=='infeasible' or error=='illegal':
+                fsm = createSpecificFSM(transList)
+                fsmlFilePath = os.path.join("./testdata/negative/input", error, "fsm", "sample"+file.split("template")[2]+".fsml")
+
+                if error=='infeasible':
+                    wrongInput = generateInfeasibleInput(fsm)
+                else:
+                    wrongInput = generateIllegalInput(fsm)
+
+                inputFile = open(os.path.join("./testdata/negative/input", error, "input"+file.split("template")[2]+".json"), 'w')
+                inputFile.write(json.dumps(wrongInput))
+
+
+            fsmlFile = open(fsmlFilePath, 'w')
             template = env.get_template(file)
             fsmlData = template.render(states=fsm)
-            fsmlFile = open(os.path.join("./testdata/negative/fsm", error, "sample"+file.split("template")[2]+".fsml"), 'w')
             fsmlFile.write(fsmlData)
-
-            # generate wrong input .json File
-            #correctInput, correctOutput = generateCorrectInput(fsm)
-            #inputFile = open(os.path.join("./testdata/negative/input", error, "input"+file.split("template")[2]+".json"), 'w')
-            #inputFile.write(json.dumps(correctInput))
 
             count += 1
 

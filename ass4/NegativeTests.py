@@ -13,7 +13,6 @@ from FalseDataGenerator import generateNegativeTestData
 from Simulator import simulateFSM
 from CodeGenerator import generateCode
 
-# Code for testing all valid fsml files
 
 class parsererrorTestCase(unittest.TestCase):
 
@@ -27,21 +26,66 @@ class parsererrorTestCase(unittest.TestCase):
     def shortDescription(self):
         return 'TestCase for file %s' % self.fsmlFile
 
-def parsererrorTestSuite():
-    # delete old test data
-    for path, _, files in os.walk("./testdata/negative/fsm/parsererror"):
-        for testfile in files:
-            if not testfile == ".gitignore":
-                os.remove(os.path.join(path, testfile))
-
+def parsererrorTestSuite(depth):
     # generate new test data
-    generateNegativeTestData(7,'parsererror')
+    generateNegativeTestData(depth,'parsererror')
 
     fsmlFiles = glob.glob('./testdata/negative/fsm/parsererror/*.fsml')
     return unittest.TestSuite([parsererrorTestCase(fsmlFile) for fsmlFile in fsmlFiles])
 
+class infeasibleInputTestCase(unittest.TestCase):
+
+    def __init__(self, fsmlFile, inputFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+        self.inputFile = inputFile
+
+    def testOneFile(self):
+        fsm = parseFSM(self.fsmlFile)
+        with open(self.inputFile) as inputFile:
+            self.assertRaises(InfeasibleSymbolException, simulateFSM, fsm, json.load(inputFile))
+
+    def shortDescription(self):
+        return 'TestCase for file %s and input %s' % (self.fsmlFile, self.inputFile)
+
+def infeasibleInputTestSuite(depth):
+    # generate new test data
+    generateNegativeTestData(depth,'infeasible')
+
+    fsmlFiles = sorted(glob.glob('./testdata/negative/input/infeasible/fsm/*.fsml'))
+    inputFiles = sorted(glob.glob('./testdata/negative/input/infeasible/*.json'))
+    return unittest.TestSuite([infeasibleInputTestCase(fsmlFile, inputFile) for fsmlFile, inputFile in zip(fsmlFiles, inputFiles)])
+
+class IllegalInputTestCase(unittest.TestCase):
+
+    def __init__(self, fsmlFile, inputFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+        self.inputFile = inputFile
+
+    def testOneFile(self):
+        fsm = parseFSM(self.fsmlFile)
+        with open(self.inputFile) as inputFile:
+            self.assertRaises(IllegalSymbolException, simulateFSM, fsm, json.load(inputFile))
+
+    def shortDescription(self):
+        return 'TestCase for file %s and input %s' % (self.fsmlFile, self.inputFile)
+
+def illegalInputTestSuite(depth):
+    # generate new test data
+    generateNegativeTestData(depth,'illegal')
+
+    fsmlFiles = sorted(glob.glob('./testdata/negative/input/illegal/fsm/*.fsml'))
+    inputFiles = sorted(glob.glob('./testdata/negative/input/illegal/*.json'))
+    return unittest.TestSuite([IllegalInputTestCase(fsmlFile, inputFile) for fsmlFile, inputFile in zip(fsmlFiles, inputFiles)])
+
+
 # main module Code for running all the tests
 
 if __name__ == '__main__':
+    depth = 7
     testRunner = unittest.TextTestRunner()
-    testRunner.run(parsererrorTestSuite())
+    testRunner.run(parsererrorTestSuite(depth))
+    testRunner.run(infeasibleInputTestSuite(depth))
+    testRunner.run(illegalInputTestSuite(depth))
+

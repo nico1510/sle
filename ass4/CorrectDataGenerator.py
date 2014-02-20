@@ -45,7 +45,17 @@ def generateJinjaTemplateFile(filename):
 
     return transList
 
+
+def removeOldCorrectTestFiles(subdir=''):
+    for path, _, files in os.walk(os.path.join("./testdata/positive", subdir)):
+        for testfile in files:
+            if not testfile == ".gitignore":
+                os.remove(os.path.join(path, testfile))
+
+
 def generatePositiveTestData(depth):
+
+    removeOldCorrectTestFiles()
 
     templatefiles = generateRawTemplates(depth)
     env = Environment(loader=FileSystemLoader('.'))
