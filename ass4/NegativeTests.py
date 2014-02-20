@@ -80,6 +80,26 @@ def illegalInputTestSuite(depth):
     return unittest.TestSuite([IllegalInputTestCase(fsmlFile, inputFile) for fsmlFile, inputFile in zip(fsmlFiles, inputFiles)])
 
 
+class SingleinitialTestCase(unittest.TestCase):
+
+    def __init__(self, fsmlFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+
+    def testOneFile(self):
+        fsm = parseFSM(self.fsmlFile)
+        self.assertRaises(SingleInitialException, ok, fsm)
+
+    def shortDescription(self):
+        return 'TestCase for file %s' % self.fsmlFile
+
+def singleinitialTestSuite(depth):
+    # generate new test data
+    generateNegativeTestData(depth,'singleinitial')
+
+    fsmlFiles = glob.glob('./testdata/negative/fsm/singleinitial/*.fsml')
+    return unittest.TestSuite([SingleinitialTestCase(fsmlFile) for fsmlFile in fsmlFiles])
+
 # main module Code for running all the tests
 
 if __name__ == '__main__':
@@ -88,4 +108,5 @@ if __name__ == '__main__':
     testRunner.run(parsererrorTestSuite(depth))
     testRunner.run(infeasibleInputTestSuite(depth))
     testRunner.run(illegalInputTestSuite(depth))
+    testRunner.run(singleinitialTestSuite(depth))
 

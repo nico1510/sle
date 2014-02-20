@@ -8,31 +8,39 @@ from FalseInputGenerator import generateInfeasibleInput, generateIllegalInput
 from CorrectFSMGenerator import createSpecificFSM
 
 
-def generateJinjaTemplateFile(filename, produceError):
+def generateJinjaTemplateFile(filename, error):
     templatefile = open(filename, 'r')
     content = templatefile.read().split()
     noStates = 0
     currentState = None
     currentTransition = None
     transList = []
-    errorPosition = 0 # default case no error is produced
+    syntaxErrorPos = 0 # default case no error is produced
+    initialErrorPos = 0 # default case no error is produced
 
-    if produceError:
+    if error=='parsererror':
         if not "#stateDecl#" in content or not "#input#" in content:
-            errorPosition = randint(1,3)  # no matter how small the fsm is, it is always possible to insert a parser error at these positions
+            syntaxErrorPos = randint(1,3)  # no matter how small the fsm is, it is always possible to insert a parser error at these positions
         else:
-            errorPosition = randint(1,7)  # if the fsm has any transitions, there are more possibilities to insert a parser error
+            syntaxErrorPos = randint(1,7)  # if the fsm has any transitions, there are more possibilities to insert a parser error
+    elif error=='singleinitial':
+        noOfStates = len([state for state in content if state=='#stateDecl#'])
+        initialErrorPos = randint(1, noOfStates+1)
 
     for index, token in enumerate(content):
 
-        if errorPosition==1 and "initial" in token:
-            content[index] = "initail"
+        if "initial" in token:
+            if syntaxErrorPos == 1:
+                content[index] = "initail"
+            elif initialErrorPos == 1:
+                initialErrorPos = 0
+                content.remove('initial')  # remove initial keyword -> 0 initial states
 
-        if errorPosition==2 and "state" in token:
+        if syntaxErrorPos==2 and "state" in token:
             content[index] = "states"
 
         if "#initState#" in token:
-            content[index] = "{{ states[0].name }} {" if errorPosition==3 else "{{ states[0].name }}"
+            content[index] = "{{ states[0].name }} {" if syntaxErrorPos==3 else "{{ states[0].name }}"
             currentState = 0
             currentTransition = -1
             transList.insert(0,0)
@@ -40,20 +48,26 @@ def generateJinjaTemplateFile(filename, produceError):
         if "#stateDecl#" in token:
             noStates += 1
             currentState = noStates
-            content[index] = "{{ states[" + str(currentState) + "].name }} ]" if errorPosition==4 else "{{ states[" + str(currentState) + "].name }}"
+            if syntaxErrorPos==4:
+                content[index] = "{{ states[" + str(currentState) + "].name }} ]"
+            elif initialErrorPos == noStates+1:
+                content[index-1] = 'initial state'
+                content[index] = "{{ states[" + str(currentState) + "].name }}"
+            else:
+                content[index] = "{{ states[" + str(currentState) + "].name }}"
             currentTransition = -1
             transList.append(0)
 
         if "#input#" in token:
             currentTransition += 1
             transList[currentState]=currentTransition+1
-            content[index] = "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].input }} X" if errorPosition==5 else "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].input }}"
+            content[index] = "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].input }} X" if syntaxErrorPos==5 else "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].input }}"
 
         if "#action#" in token:
-            content[index] = "/ {{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].action }}" if errorPosition==6 else "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].action }}"
+            content[index] = "/ {{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].action }}" if syntaxErrorPos==6 else "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].action }}"
 
         if "#newState#" in token:
-            content[index] = "_ {{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].newstate }}" if errorPosition==7 else "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].newstate }}"
+            content[index] = "_ {{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].newstate }}" if syntaxErrorPos==7 else "{{ states[" + str(currentState) + "].transitions[" + str(currentTransition) + "].newstate }}"
 
 
     templatefile.close()
@@ -84,19 +98,17 @@ def generateNegativeTestData(depth, error):
 
     for file in templatefiles:
         # after this command, the placeholders of the file are replaced with jinja placeholders
-        transList = generateJinjaTemplateFile(file, error=='parsererror')
+        transList = generateJinjaTemplateFile(file, error)
         fsmlFilePath = os.path.join("./testdata/negative/fsm", error, "sample"+file.split("template")[2]+".fsml")
 
         try:
+            fsm = createSpecificFSM(transList)
+
             # generate wrong .fsml File
             if error=='reachability':
                 fsm = createWrongFSM(transList, error)
 
-            if error=='parsererror':
-                fsm = createSpecificFSM(transList)
-
             if error=='infeasible' or error=='illegal':
-                fsm = createSpecificFSM(transList)
                 fsmlFilePath = os.path.join("./testdata/negative/input", error, "fsm", "sample"+file.split("template")[2]+".fsml")
 
                 if error=='infeasible':
