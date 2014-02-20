@@ -82,7 +82,7 @@ def removeOldNegativeTestFiles(error):
         subdir = 'input'
     else:
         subdir = 'fsm'
-    for path, _, files in os.walk(os.path.join("./testdata/negative/"), subdir, error):
+    for path, _, files in os.walk(os.path.join("./testdata/negative/", subdir, error)):
         for testfile in files:
             if not testfile == ".gitignore":
                 os.remove(os.path.join(path, testfile))
