@@ -1,80 +1,59 @@
 from random import randint
-import string
+from CorrectFSMGenerator import randomWord
 
 
-def randomWord():
-    wordlength = randint(2,10)
-    word = ""
-    for i in range(wordlength):
-        word += string.ascii_lowercase[randint(0,25)]
-    return word
-
-def randomInputName(state, allInputNames):
-    stateInputNames = set([trans["input"] for trans in state["transitions"]])
-    remainingInputNames = set(allInputNames).difference(stateInputNames)
-    if not remainingInputNames:
-        newlabel = randomWord()
-        # this while loop just makes sure that no random duplicates are created by accident
-        while newlabel in allInputNames:
-            newlabel = randomWord()
-        allInputNames.append(newlabel)
-        return newlabel
+def addDeterminismError(fsm):
+    candidates = [state for state in fsm if len(state['transitions']) > 1]
+    if not candidates:
+        raise ValueError("Can not add a determinism error to given fsm")
     else:
-        return list(remainingInputNames)[randint(0,len(remainingInputNames)-1)]
+        errorState = candidates[randint(0, len(candidates)-1)]
+        indices = range(0, len(errorState['transitions']))
+        trans1 = errorState['transitions'][indices.pop(randint(0, len(indices)-1))]
+        trans2 = errorState['transitions'][indices.pop(randint(0, len(indices)-1))]
+        trans1['input'] = trans2['input']
 
-def sortFSM(fsm, transitionList):
-    # put initial state at head of the list
-    sortedFsm = [fsm.pop(0)]
+        return fsm
 
-    # now append dicts of all other states to list
-    for transCount in transitionList[1:]:
-        fittingState = [state for state in fsm if len(state["transitions"])==transCount].pop()
-        fsm.remove(fittingState)
-        sortedFsm.append(fittingState)
+def addDuplicateIdError(fsm):
+    if len(fsm) < 2:
+        raise ValueError("Can not add a duplicate ID error to given fsm")
+    else:
+        indices = range(0, len(fsm))
+        state1 = fsm[indices.pop(randint(0, len(indices)-1))]
+        state2 = fsm[indices.pop(randint(0, len(indices)-1))]
 
-    return sortedFsm
+        state1['name'] = state2['name']
+
+        return fsm
+
+def addReachabilityError(fsm):
+    if len(fsm) < 2:
+        raise ValueError("Can not add reachability error to given fsm")
+    else:
+        unreachableState = fsm[randint(1, len(fsm)-1)]
+        otherStates = [state['name'] for state in fsm if state is not unreachableState]
+        for state in fsm:
+            if state is not unreachableState:
+                for transition in state['transitions']:
+                    if transition['newstate'] == unreachableState['name']:
+                        transition['newstate'] = otherStates[randint(0, len(otherStates)-1)]
+
+        return fsm
 
 
-def createWrongFSM(transitionList, error):
+def addResolutionError(fsm):
+    candidates = [state for state in fsm if len(state['transitions']) > 0]
+    if not candidates:
+        raise ValueError("Can not add resolution error to given fsm")
+    else:
+        errorState = candidates[randint(0, len(candidates)-1)]
+        trans = errorState['transitions'][randint(0, len(errorState['transitions'])-1)]
 
-    fsm = []
+        unresolvableState = randomWord()
+        while unresolvableState in [state['name'] for state in fsm]:
+            unresolvableState = randomWord()
 
-    noOfStates = len(transitionList)
-    noOfTrans = sum(transitionList)
+        trans['newstate'] = unresolvableState
 
-    if (noOfTrans < noOfStates-1) or (transitionList[0]==0 and len(transitionList)>1):
-        raise ValueError("Can not construct a valid FSM with given input")
-
-
-    stateNames = [randomWord() for i in range(noOfStates)]
-    # this while loop is only run if the random word generator accidently generates duplicate words
-    while len(set(stateNames)) < len(stateNames):
-        stateNames = [randomWord() for i in range(noOfStates)]
-
-    inputNames = []
-    stateDicts = []
-
-    for requiredTrans, stateName in zip([transitionList[0]]+sorted(transitionList[1:], reverse=True), stateNames):
-        state = dict()
-        state["transitions"] = []
-        state["name"] = stateName
-        state["requiredTransitions"] = requiredTrans
-        stateDicts.append(state)
-
-    # add the initial state
-    fsm.append(stateDicts.pop(0))
-    noOfStates -= 1
-
-    for i in range(noOfTrans):
-        stillNeedTrans = [state for state in fsm if state["requiredTransitions"]>0]
-        randomStartState = stillNeedTrans[randint(0, len(stillNeedTrans)-1)]
-        if i < noOfStates:
-            randomTargetState = stateDicts.pop(0)
-            fsm.append(randomTargetState)
-        else:
-            randomTargetState = fsm[randint(0, len(fsm)-1)]
-        inputName = randomInputName(randomStartState, inputNames)
-        randomStartState["transitions"].append({'input': inputName, 'action': randomWord(), 'newstate': randomTargetState['name']})
-        randomStartState["requiredTransitions"] -= 1
-
-    return sortFSM(fsm, transitionList)
+        return fsm

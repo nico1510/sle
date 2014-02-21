@@ -3,8 +3,8 @@ import json
 import os
 from jinja2 import FileSystemLoader, Environment
 from CorrectFSMGenerator import createSpecificFSM
-from SyntaxGenerator import generateRawTemplates
 from CorrectInputGenerator import generateCorrectInput
+from SyntaxGenerator import generateRawTemplates
 
 
 def generateJinjaTemplateFile(filename):

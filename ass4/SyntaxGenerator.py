@@ -3,12 +3,10 @@ from nltk.parse.generate2 import generate
 from nltk.grammar import parse_cfg
 
 grammarstring = """
-FSM -> ISTATE STATES
-ISTATE -> 'initial' 'state' '#initState#' '{' TRANS '}'
+FSM -> 'initial' 'state' '#initState#' '{' TRANS '}' STATES
 STATES -> STATE STATES |
 STATE -> 'state' '#stateDecl#' '{' TRANS '}'
-TRANS -> TRANSITION TRANS |
-TRANSITION -> '#input#' '/' '#action#' '->' '#newState#' ';'
+TRANS -> '#input#' '/' '#action#' '->' '#newState#' ';' TRANS |
 """
 
 def generateRawTemplates(depth):

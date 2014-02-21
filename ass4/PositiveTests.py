@@ -28,7 +28,7 @@ class positiveOkTestCase(unittest.TestCase):
     def shortDescription(self):
         return 'TestCase for file %s' % self.fsmlFile
 
-def fsmlTestSuite():
+def fsmlTestSuite(depth):
     # delete old test data
     for path, _, files in os.walk("./testdata"):
         for testfile in files:
@@ -36,7 +36,7 @@ def fsmlTestSuite():
                 os.remove(os.path.join(path, testfile))
 
     # generate new test data
-    generatePositiveTestData(7)
+    generatePositiveTestData(depth)
 
     fsmlFiles = glob.glob('./testdata/positive/fsm/*.fsml')
     return unittest.TestSuite([positiveOkTestCase(fsmlFile) for fsmlFile in fsmlFiles])
@@ -88,7 +88,7 @@ class positiveOutputTestCase(unittest.TestCase):
 
 
     def shortDescription(self):
-        return 'TestCase for fsml file : %s with input file : %s and output file : %s' % (self.fsmlFile, self.inputFile, self.correctOutputFile)
+        return 'Test Case for fsml file : %s with input file : %s and output file : %s' % (self.fsmlFile, self.inputFile, self.correctOutputFile)
 
 
 def inputTestSuite():
@@ -101,6 +101,12 @@ def inputTestSuite():
 # main module Code for running all the tests
 
 if __name__ == '__main__':
+    depth = 7
     testRunner = unittest.TextTestRunner()
-    testRunner.run(fsmlTestSuite())
+    testRunner.run(fsmlTestSuite(depth))
     testRunner.run(inputTestSuite())
+
+    # remove old templates
+    for file in glob.glob('./templates/*'):
+        if not ".gitignore" in file:
+            os.remove(file)

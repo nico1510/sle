@@ -11,7 +11,6 @@ from ConstraintChecker import ok
 from FsmExceptions import *
 from FalseDataGenerator import generateNegativeTestData
 from Simulator import simulateFSM
-from CodeGenerator import generateCode
 
 
 class parsererrorTestCase(unittest.TestCase):
@@ -50,7 +49,7 @@ class infeasibleInputTestCase(unittest.TestCase):
 
 def infeasibleInputTestSuite(depth):
     # generate new test data
-    generateNegativeTestData(depth,'infeasible')
+    generateNegativeTestData(depth, 'infeasible')
 
     fsmlFiles = sorted(glob.glob('./testdata/negative/input/infeasible/fsm/*.fsml'))
     inputFiles = sorted(glob.glob('./testdata/negative/input/infeasible/*.json'))
@@ -73,7 +72,7 @@ class IllegalInputTestCase(unittest.TestCase):
 
 def illegalInputTestSuite(depth):
     # generate new test data
-    generateNegativeTestData(depth,'illegal')
+    generateNegativeTestData(depth, 'illegal')
 
     fsmlFiles = sorted(glob.glob('./testdata/negative/input/illegal/fsm/*.fsml'))
     inputFiles = sorted(glob.glob('./testdata/negative/input/illegal/*.json'))
@@ -95,10 +94,94 @@ class SingleinitialTestCase(unittest.TestCase):
 
 def singleinitialTestSuite(depth):
     # generate new test data
-    generateNegativeTestData(depth,'singleinitial')
+    generateNegativeTestData(depth, 'singleinitial')
 
     fsmlFiles = glob.glob('./testdata/negative/fsm/singleinitial/*.fsml')
     return unittest.TestSuite([SingleinitialTestCase(fsmlFile) for fsmlFile in fsmlFiles])
+
+class DeterminismTestCase(unittest.TestCase):
+
+    def __init__(self, fsmlFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+
+    def testOneFile(self):
+        fsm = parseFSM(self.fsmlFile)
+        self.assertRaises(DeterministicException, ok, fsm)
+
+    def shortDescription(self):
+        return 'TestCase for file %s' % self.fsmlFile
+
+def determinismTestSuite(depth):
+    # generate new test data
+    generateNegativeTestData(depth, 'determinism')
+
+    fsmlFiles = glob.glob('./testdata/negative/fsm/determinism/*.fsml')
+    return unittest.TestSuite([DeterminismTestCase(fsmlFile) for fsmlFile in fsmlFiles])
+
+
+class DuplicateIdTestCase(unittest.TestCase):
+
+    def __init__(self, fsmlFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+
+    def testOneFile(self):
+        fsm = parseFSM(self.fsmlFile)
+        self.assertRaises(DistinctIdsException, ok, fsm)
+
+    def shortDescription(self):
+        return 'TestCase for file %s' % self.fsmlFile
+
+def duplicateIdTestSuite(depth):
+    # generate new test data
+    generateNegativeTestData(depth, 'duplicateids')
+
+    fsmlFiles = glob.glob('./testdata/negative/fsm/duplicateids/*.fsml')
+    return unittest.TestSuite([DuplicateIdTestCase(fsmlFile) for fsmlFile in fsmlFiles])
+
+
+class ReachabilityTestCase(unittest.TestCase):
+
+    def __init__(self, fsmlFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+
+    def testOneFile(self):
+        fsm = parseFSM(self.fsmlFile)
+        self.assertRaises(ReachableException, ok, fsm)
+
+    def shortDescription(self):
+        return 'TestCase for file %s' % self.fsmlFile
+
+def reachabilityTestSuite(depth):
+    # generate new test data
+    generateNegativeTestData(depth, 'reachability')
+
+    fsmlFiles = glob.glob('./testdata/negative/fsm/reachability/*.fsml')
+    return unittest.TestSuite([ReachabilityTestCase(fsmlFile) for fsmlFile in fsmlFiles])
+
+
+class ResolutionTestCase(unittest.TestCase):
+
+    def __init__(self, fsmlFile):
+        unittest.TestCase.__init__(self, methodName='testOneFile')
+        self.fsmlFile = fsmlFile
+
+    def testOneFile(self):
+        fsm = parseFSM(self.fsmlFile)
+        self.assertRaises(ResolvableException, ok, fsm)
+
+    def shortDescription(self):
+        return 'TestCase for file %s' % self.fsmlFile
+
+def resolutionTestSuite(depth):
+    # generate new test data
+    generateNegativeTestData(depth, 'resolution')
+
+    fsmlFiles = glob.glob('./testdata/negative/fsm/resolution/*.fsml')
+    return unittest.TestSuite([ResolutionTestCase(fsmlFile) for fsmlFile in fsmlFiles])
+
 
 # main module Code for running all the tests
 
@@ -109,4 +192,12 @@ if __name__ == '__main__':
     testRunner.run(infeasibleInputTestSuite(depth))
     testRunner.run(illegalInputTestSuite(depth))
     testRunner.run(singleinitialTestSuite(depth))
+    testRunner.run(determinismTestSuite(depth))
+    testRunner.run(duplicateIdTestSuite(depth))
+    testRunner.run(resolutionTestSuite(depth))
+    testRunner.run(reachabilityTestSuite(depth))
 
+    # remove old templates
+    for file in glob.glob('./templates/*'):
+        if not ".gitignore" in file:
+            os.remove(file)

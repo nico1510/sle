@@ -2,7 +2,7 @@ import json
 import os
 from random import randint
 from jinja2 import FileSystemLoader, Environment
-from FalseFSMGenerator import createWrongFSM
+from FalseFSMGenerator import addDeterminismError, addDuplicateIdError, addReachabilityError, addResolutionError
 from SyntaxGenerator import generateRawTemplates
 from FalseInputGenerator import generateInfeasibleInput, generateIllegalInput
 from CorrectFSMGenerator import createSpecificFSM
@@ -105,8 +105,17 @@ def generateNegativeTestData(depth, error):
             fsm = createSpecificFSM(transList)
 
             # generate wrong .fsml File
+            if error=='determinism':
+                fsm = addDeterminismError(fsm)
+
+            if error=='duplicateids':
+                fsm = addDuplicateIdError(fsm)
+
             if error=='reachability':
-                fsm = createWrongFSM(transList, error)
+                fsm = addReachabilityError(fsm)
+
+            if error=='resolution':
+                fsm = addResolutionError(fsm)
 
             if error=='infeasible' or error=='illegal':
                 fsmlFilePath = os.path.join("./testdata/negative/input", error, "fsm", "sample"+file.split("template")[2]+".fsml")
