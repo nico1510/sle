@@ -1,5 +1,12 @@
+run:
+	python -B PositiveTests.py
+	python -B NegativeTests.py
+
 clean:
-	@rm -rf FSMGenerator.pyc
-	@rm -rf DataGenerator.pyc
-	@rm -rf InputGenerator.pyc
+	@rm -rf CorrectFSMGenerator.pyc
+	@rm -rf CorrectDataGenerator.pyc
+	@rm -rf CorrectInputGenerator.pyc
+	@rm -rf FalseFSMGenerator.pyc
+	@rm -rf FalseDataGenerator.pyc
+	@rm -rf FalseInputGenerator.pyc
 	@rm -rf SyntaxGenerator.pyc

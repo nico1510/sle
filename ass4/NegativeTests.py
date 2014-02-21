@@ -26,6 +26,7 @@ class parsererrorTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def parsererrorTestSuite(depth):
+    print "Running parser error Test Cases"
     # generate new test data
     generateNegativeTestData(depth,'parsererror')
 
@@ -48,6 +49,7 @@ class infeasibleInputTestCase(unittest.TestCase):
         return 'TestCase for file %s and input %s' % (self.fsmlFile, self.inputFile)
 
 def infeasibleInputTestSuite(depth):
+    print "Running infeasible input Test Cases"
     # generate new test data
     generateNegativeTestData(depth, 'infeasible')
 
@@ -71,6 +73,7 @@ class IllegalInputTestCase(unittest.TestCase):
         return 'TestCase for file %s and input %s' % (self.fsmlFile, self.inputFile)
 
 def illegalInputTestSuite(depth):
+    print "Running illegal input Test Cases"
     # generate new test data
     generateNegativeTestData(depth, 'illegal')
 
@@ -93,6 +96,7 @@ class SingleinitialTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def singleinitialTestSuite(depth):
+    print "Running single initial error Test Cases"
     # generate new test data
     generateNegativeTestData(depth, 'singleinitial')
 
@@ -113,6 +117,7 @@ class DeterminismTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def determinismTestSuite(depth):
+    print "Running determinism error Test Cases"
     # generate new test data
     generateNegativeTestData(depth, 'determinism')
 
@@ -134,6 +139,7 @@ class DuplicateIdTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def duplicateIdTestSuite(depth):
+    print "Running duplicate id's error Test Cases"
     # generate new test data
     generateNegativeTestData(depth, 'duplicateids')
 
@@ -155,6 +161,7 @@ class ReachabilityTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def reachabilityTestSuite(depth):
+    print "Running reachability error Test Cases"
     # generate new test data
     generateNegativeTestData(depth, 'reachability')
 
@@ -176,6 +183,7 @@ class ResolutionTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def resolutionTestSuite(depth):
+    print "Running resolution error Test Cases"
     # generate new test data
     generateNegativeTestData(depth, 'resolution')
 

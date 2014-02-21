@@ -29,6 +29,7 @@ class positiveOkTestCase(unittest.TestCase):
         return 'TestCase for file %s' % self.fsmlFile
 
 def fsmlTestSuite(depth):
+    print "Running positive *.fsml Test Cases"
     # delete old test data
     for path, _, files in os.walk("./testdata"):
         for testfile in files:
@@ -92,6 +93,7 @@ class positiveOutputTestCase(unittest.TestCase):
 
 
 def inputTestSuite():
+    print "Running positive Input Test Cases"
     fsmlFiles = sorted(glob.glob('./testdata/positive/fsm/*.fsml'))
     inputFiles = sorted(glob.glob('./testdata/positive/input/*.json'))
     correctOutputFiles = sorted(glob.glob('./testdata/positive/output/*.json'))
