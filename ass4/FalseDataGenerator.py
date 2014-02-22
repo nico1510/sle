@@ -127,12 +127,14 @@ def generateNegativeTestData(depth, error):
 
                 inputFile = open(os.path.join("./testdata/negative/input", error, "input"+file.split("template")[2]+".json"), 'w')
                 inputFile.write(json.dumps(wrongInput))
+                inputFile.close()
 
 
             fsmlFile = open(fsmlFilePath, 'w')
             template = env.get_template(file)
             fsmlData = template.render(states=fsm)
             fsmlFile.write(fsmlData)
+            fsmlFile.close()
 
             count += 1
 
