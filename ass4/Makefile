@@ -1,4 +1,5 @@
 run:
+	cd ../ass2; make build;
 	python -B PositiveTests.py
 	python -B NegativeTests.py
 
