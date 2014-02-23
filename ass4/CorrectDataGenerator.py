@@ -42,6 +42,7 @@ def generateJinjaTemplateFile(filename):
     templatefile.close()
     templatefile = open(filename, 'w')
     templatefile.write(' '.join(content))
+    templatefile.close()
 
     return transList
 
@@ -72,13 +73,16 @@ def generatePositiveTestData(depth):
             fsmlData = template.render(states=fsm)
             fsmlFile = open(os.path.join("./testdata/positive/fsm", "sample"+file.split("template")[2]+".fsml"), 'w')
             fsmlFile.write(fsmlData)
+            fsmlFile.close()
 
             # generate correct input .json File
             correctInput, correctOutput = generateCorrectInput(fsm)
             inputFile = open("./testdata/positive/input/input"+file.split("template")[2]+".json", 'w')
             inputFile.write(json.dumps(correctInput))
+            inputFile.close()
             outputFile = open("./testdata/positive/output/output"+file.split("template")[2]+".json", 'w')
             outputFile.write(json.dumps(correctOutput))
+            outputFile.close()
 
             count += 1
 

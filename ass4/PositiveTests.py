@@ -103,12 +103,17 @@ def inputTestSuite():
 # main module Code for running all the tests
 
 if __name__ == '__main__':
-    depth = 7
-    testRunner = unittest.TextTestRunner()
-    testRunner.run(fsmlTestSuite(depth))
-    testRunner.run(inputTestSuite())
 
     # remove old templates
     for file in glob.glob('./templates/*'):
         if not ".gitignore" in file:
             os.remove(file)
+
+    if len(sys.argv) > 1:
+        depth = int(sys.argv[1])
+    else:
+        depth = 7 # default value
+
+    testRunner = unittest.TextTestRunner()
+    testRunner.run(fsmlTestSuite(depth))
+    testRunner.run(inputTestSuite())

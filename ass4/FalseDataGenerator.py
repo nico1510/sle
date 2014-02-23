@@ -73,6 +73,7 @@ def generateJinjaTemplateFile(filename, error):
     templatefile.close()
     templatefile = open(filename, 'w')
     templatefile.write(' '.join(content))
+    templatefile.close()
 
     return transList
 

@@ -1,7 +1,7 @@
 run:
 	cd ../ass2; make build;
-	python -B PositiveTests.py
-	python -B NegativeTests.py
+	python -B PositiveTests.py ${depth}
+	python -B NegativeTests.py ${depth}
 
 clean:
 	@rm -rf CorrectFSMGenerator.pyc
